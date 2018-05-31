@@ -20,6 +20,7 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import io.repro.android.Repro;
 
 class RNWebView extends WebView implements LifecycleEventListener {
 
@@ -112,10 +113,18 @@ class RNWebView extends WebView implements LifecycleEventListener {
             this.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
 
-        this.setWebViewClient(new EventWebClient());
+        final EventWebClient eventWebClient = new EventWebClient();
+        this.setWebViewClient(eventWebClient);
         this.setWebChromeClient(getCustomClient());
 
         this.addJavascriptInterface(RNWebView.this, "webView");
+
+        // call startWebViewTracking() with webView and client
+        Repro.startWebViewTracking(this, eventWebClient);
+
+        // Custom User Agent
+        final WebSettings settings = this.getSettings();
+        settings.setUserAgentString(settings.getUserAgentString() + "Repro");
     }
 
     public void setCharset(String charset) {

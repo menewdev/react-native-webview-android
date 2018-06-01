@@ -192,11 +192,11 @@ class RNWebView extends WebView implements LifecycleEventListener {
         destroy();
     }
 
-    @Override
-    public void onDetachedFromWindow() {
-        this.loadDataWithBaseURL(this.getBaseUrl(), "<html></html>", "text/html", this.getCharset(), null);
-        super.onDetachedFromWindow();
-    }
+    // @Override
+    // public void onDetachedFromWindow() {
+    //     this.loadDataWithBaseURL(this.getBaseUrl(), "<html></html>", "text/html", this.getCharset(), null);
+    //     super.onDetachedFromWindow();
+    // }
 
     @JavascriptInterface
      public void postMessage(String jsParamaters) {

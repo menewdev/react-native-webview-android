@@ -13,6 +13,8 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.SystemClock;
@@ -26,6 +28,7 @@ class RNWebView extends WebView implements LifecycleEventListener {
 
     private final EventDispatcher mEventDispatcher;
     private final RNWebViewManager mViewManager;
+    private final ThemedReactContext mReactContext;
 
     private String charset = "UTF-8";
     private String baseUrl = "file:///";
@@ -66,6 +69,30 @@ class RNWebView extends WebView implements LifecycleEventListener {
 
     protected class CustomWebChromeClient extends WebChromeClient {
         @Override
+        public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
+          new AlertDialog.Builder(mReactContext)
+                    .setTitle(url + "のページ")
+                    .setMessage(message)
+                    .setPositiveButton(android.R.string.ok,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    result.confirm();
+                                }
+                            })
+                    .setNegativeButton(android.R.string.cancel,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    result.cancel();
+                                }
+                            })
+                    .setCancelable(false)
+                    .create()
+                    .show();
+
+            return true;
+        }
+
+        @Override
         public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
             getModule().showAlert(url, message, result);
             return true;
@@ -94,6 +121,7 @@ class RNWebView extends WebView implements LifecycleEventListener {
     public RNWebView(RNWebViewManager viewManager, ThemedReactContext reactContext) {
         super(reactContext);
 
+        mReactContext = reactContext;
         mViewManager = viewManager;
         mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
 

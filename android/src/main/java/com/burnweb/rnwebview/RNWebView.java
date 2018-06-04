@@ -2,6 +2,7 @@ package com.burnweb.rnwebview;
 
 import android.annotation.SuppressLint;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -13,6 +14,9 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.view.WindowManager;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.SystemClock;
@@ -26,6 +30,7 @@ class RNWebView extends WebView implements LifecycleEventListener {
 
     private final EventDispatcher mEventDispatcher;
     private final RNWebViewManager mViewManager;
+    private final ThemedReactContext mReactContext;
 
     private String charset = "UTF-8";
     private String baseUrl = "file:///";
@@ -37,6 +42,12 @@ class RNWebView extends WebView implements LifecycleEventListener {
 
     protected class EventWebClient extends WebViewClient {
         public boolean shouldOverrideUrlLoading(WebView view, String url){
+            if (url.substring(0, 7).equals("mailto:")) {
+                Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse(url));
+                mReactContext.getCurrentActivity().startActivity(intent);
+                return true;
+            }
+
             int navigationType = 0;
 
             if (currentUrl.equals(url) || url.equals("about:blank")) { // for regular .reload() and html reload.
@@ -57,6 +68,12 @@ class RNWebView extends WebView implements LifecycleEventListener {
             if(RNWebView.this.getInjectedJavaScript() != null) {
                 view.loadUrl("javascript:(function() {\n" + RNWebView.this.getInjectedJavaScript() + ";\n})();");
             }
+
+            if  (url.indexOf("menu.php") != -1) {
+                mReactContext.getCurrentActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }else{
+                mReactContext.getCurrentActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
         }
 
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -65,6 +82,30 @@ class RNWebView extends WebView implements LifecycleEventListener {
     }
 
     protected class CustomWebChromeClient extends WebChromeClient {
+        @Override
+        public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
+          new AlertDialog.Builder(mReactContext)
+                    .setTitle(url + "のページ")
+                    .setMessage(message)
+                    .setPositiveButton(android.R.string.ok,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    result.confirm();
+                                }
+                            })
+                    .setNegativeButton(android.R.string.cancel,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    result.cancel();
+                                }
+                            })
+                    .setCancelable(false)
+                    .create()
+                    .show();
+
+            return true;
+        }
+
         @Override
         public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
             getModule().showAlert(url, message, result);
@@ -94,6 +135,7 @@ class RNWebView extends WebView implements LifecycleEventListener {
     public RNWebView(RNWebViewManager viewManager, ThemedReactContext reactContext) {
         super(reactContext);
 
+        mReactContext = reactContext;
         mViewManager = viewManager;
         mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
 

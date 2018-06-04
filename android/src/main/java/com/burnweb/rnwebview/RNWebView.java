@@ -16,6 +16,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.view.WindowManager;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.SystemClock;
@@ -66,6 +67,12 @@ class RNWebView extends WebView implements LifecycleEventListener {
 
             if(RNWebView.this.getInjectedJavaScript() != null) {
                 view.loadUrl("javascript:(function() {\n" + RNWebView.this.getInjectedJavaScript() + ";\n})();");
+            }
+
+            if  (url.indexOf("menu.php") != -1) {
+                mReactContext.getCurrentActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }else{
+                mReactContext.getCurrentActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
         }
 

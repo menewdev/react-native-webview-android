@@ -2,6 +2,7 @@ package com.burnweb.rnwebview;
 
 import android.annotation.SuppressLint;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -40,6 +41,12 @@ class RNWebView extends WebView implements LifecycleEventListener {
 
     protected class EventWebClient extends WebViewClient {
         public boolean shouldOverrideUrlLoading(WebView view, String url){
+            if (url.substring(0, 7).equals("mailto:")) {
+                Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse(url));
+                mReactContext.getCurrentActivity().startActivity(intent);
+                return true;
+            }
+
             int navigationType = 0;
 
             if (currentUrl.equals(url) || url.equals("about:blank")) { // for regular .reload() and html reload.

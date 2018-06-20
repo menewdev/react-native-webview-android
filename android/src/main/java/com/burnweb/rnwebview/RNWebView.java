@@ -17,6 +17,7 @@ import android.webkit.WebViewClient;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.WindowManager;
+import android.webkit.CookieManager;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.SystemClock;
@@ -167,6 +168,10 @@ class RNWebView extends WebView implements LifecycleEventListener {
         // Custom User Agent
         final WebSettings settings = this.getSettings();
         settings.setUserAgentString(settings.getUserAgentString() + "Repro");
+
+        CookieManager.getInstance().setCookie("http://app.menew.jp", "react_native=true; expires=Fri, 31 Dec 9999 23:59:59 GMT");
+        CookieManager.getInstance().setCookie("http://app.menew.jp", "app_flg=1; expires=Fri, 31 Dec 9999 23:59:59 GMT");
+        CookieManager.getInstance().setCookie("http://app.menew.jp", "android_app_flg=1; expires=Fri, 31 Dec 9999 23:59:59 GMT");
     }
 
     public void setCharset(String charset) {

@@ -128,6 +128,11 @@ class RNWebView extends WebView implements LifecycleEventListener {
         public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
             return getModule().startFileChooserIntent(filePathCallback, fileChooserParams.createIntent());
         }
+
+        @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+            mEventDispatcher.dispatchEvent(new ProgressEvent(getId(), newProgress));
+        }
     }
 
     protected class GeoWebChromeClient extends CustomWebChromeClient {

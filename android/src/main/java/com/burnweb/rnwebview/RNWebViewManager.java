@@ -238,6 +238,7 @@ public class RNWebViewManager extends SimpleViewManager<RNWebView> {
             .put(NavigationStateChangeEvent.EVENT_NAME, MapBuilder.of("registrationName", "onNavigationStateChange"))
             .put(MessageEvent.EVENT_NAME, MapBuilder.of("registrationName", "onMessageEvent"))
             .put(ShouldOverrideUrlLoadingEvent.EVENT_NAME, MapBuilder.of("registrationName", "onShouldOverrideUrlLoading"))
+            .put(ProgressEvent.EVENT_NAME, MapBuilder.of("registrationName", "onProgress"))
             .build();
     }
 

@@ -31,6 +31,7 @@ var WebViewAndroid = createClass({
     onNavigationStateChange: PropTypes.func,
     onMessage: PropTypes.func,
     onShouldStartLoadWithRequest: PropTypes.func,
+    onError: PropTypes.func,
   },
   _onNavigationStateChange: function(event) {
     if (this.props.onNavigationStateChange) {
@@ -54,6 +55,12 @@ var WebViewAndroid = createClass({
       RCTUIManager.RNWebViewAndroid.Commands.shouldOverrideWithResult,
       [shouldOverride]
     );
+  },
+  _onError: function(event) {
+    if (this.props.onError) {
+      // なぜかこれはnativeEventにラップされない
+      this.props.onError(event);
+    }
   },
   goBack: function() {
     RCTUIManager.dispatchViewManagerCommand(
@@ -105,6 +112,7 @@ var WebViewAndroid = createClass({
         onNavigationStateChange={this._onNavigationStateChange}
         onMessageEvent={this._onMessage}
         onShouldOverrideUrlLoading={this._onShouldOverrideUrlLoading}
+        onError={this._onError}
       />
     );
   },

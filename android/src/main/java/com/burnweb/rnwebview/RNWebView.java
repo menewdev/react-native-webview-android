@@ -84,6 +84,10 @@ class RNWebView extends WebView implements LifecycleEventListener {
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             mEventDispatcher.dispatchEvent(new NavigationStateChangeEvent(getId(), SystemClock.nanoTime(), view.getTitle(), true, url, view.canGoBack(), view.canGoForward()));
         }
+
+        public void onReceivedError (WebView view, int errorCode, String description, String failingUrl) {
+            mEventDispatcher.dispatchEvent(new ErrorEvent(getId(), errorCode, description, failingUrl));
+        }
     }
 
     protected class CustomWebChromeClient extends WebChromeClient {

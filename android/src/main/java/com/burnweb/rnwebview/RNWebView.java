@@ -19,6 +19,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.SystemClock;
@@ -27,6 +29,8 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import io.repro.android.Repro;
+
+import android.util.Log;
 
 class RNWebView extends WebView implements LifecycleEventListener {
 
@@ -41,6 +45,8 @@ class RNWebView extends WebView implements LifecycleEventListener {
 
     private String currentUrl = "";
     private String shouldOverrideUrlLoadingUrl = "";
+
+    private int test = 0;
 
     protected class EventWebClient extends WebViewClient {
         public boolean shouldOverrideUrlLoading(WebView view, String url){
@@ -85,8 +91,21 @@ class RNWebView extends WebView implements LifecycleEventListener {
             mEventDispatcher.dispatchEvent(new NavigationStateChangeEvent(getId(), SystemClock.nanoTime(), view.getTitle(), true, url, view.canGoBack(), view.canGoForward()));
         }
 
-        public void onReceivedError (WebView view, int errorCode, String description, String failingUrl) {
-            mEventDispatcher.dispatchEvent(new ErrorEvent(getId(), errorCode, description, failingUrl));
+        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            // mEventDispatcher.dispatchEvent(new ErrorEvent(getId(), errorCode, description, failingUrl));
+            Log.d("error", "onReceivedError");
+        }
+
+        public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+            // int errorCode = errorResponse.getStatusCode();
+            // String description = errorResponse.getReasonPhrase();
+            // String failingUrl = request.getUrl().toString();
+            int errorCode = errorResponse.getStatusCode();
+            String description = errorResponse.getReasonPhrase();
+            String failingUrl = request.getUrl().toString();
+            Log.d("onReceivedHttpError", "code: " + errorCode + description + failingUrl);
+            if (test >= 10) mEventDispatcher.dispatchEvent(new ErrorEvent(getId(), errorCode, description, failingUrl));
+            test++;
         }
     }
 

@@ -70,15 +70,6 @@ class RNWebView extends WebView implements LifecycleEventListener {
             if(RNWebView.this.getInjectedJavaScript() != null) {
                 view.loadUrl("javascript:(function() {\n" + RNWebView.this.getInjectedJavaScript() + ";\n})();");
             }
-
-            Activity currentActivity = mReactContext.getCurrentActivity();
-            if (currentActivity != null) {
-                if  (url.indexOf("menu.php") != -1) {
-                    currentActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                } else {
-                    currentActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                }
-            }
         }
 
         public void onPageStarted(WebView view, String url, Bitmap favicon) {

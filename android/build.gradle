@@ -14,11 +14,4 @@ android {
 
 dependencies {
     compile 'com.facebook.react:react-native:+'
-    compile project(':react-native-repro')
-}
-
-repositories {
-    maven {
-        url "$rootDir/../node_modules/react-native-repro/sdk-android"
-    }
 }

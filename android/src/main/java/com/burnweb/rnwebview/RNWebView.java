@@ -26,7 +26,6 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import io.repro.android.Repro;
 
 class RNWebView extends WebView implements LifecycleEventListener {
 
@@ -160,13 +159,6 @@ class RNWebView extends WebView implements LifecycleEventListener {
         this.setWebChromeClient(getCustomClient());
 
         this.addJavascriptInterface(RNWebView.this, "webView");
-
-        // call startWebViewTracking() with webView and client
-        Repro.startWebViewTracking(this, eventWebClient);
-
-        // Custom User Agent
-        final WebSettings settings = this.getSettings();
-        settings.setUserAgentString(settings.getUserAgentString() + "Repro");
 
         CookieManager.getInstance().setCookie("http://app.menew.jp", "react_native=true; expires=Fri, 31 Dec 9999 23:59:59 GMT");
         CookieManager.getInstance().setCookie("http://app.menew.jp", "app_flg=1; expires=Fri, 31 Dec 9999 23:59:59 GMT");
